@@ -1,11 +1,11 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import isEmptyObject from 'ember-changeset/utils/computed/is-empty-object';
 import { module, test } from 'qunit';
 
-const { Object: EmberObject } = Ember;
 
 module('Unit | Utility | is empty object');
 
+/* eslint-disable ember/avoid-leaking-state-in-ember-objects */
 test('it returns true if the object has no keys', function(assert) {
   let Dummy = EmberObject.extend({
     _object: {},
@@ -25,7 +25,12 @@ test('it returns false if the object has at least 1 key', function(assert) {
 });
 
 test('it throws if invoked without dependent key', function(assert) {
-  assert.throws(() => EmberObject.extend({ isEmpty: isEmptyObject() }), ({ message }) => {
-    return message === 'Assertion Failed: `dependentKey` must be defined';
-  }, 'should throw error');
+  try {
+    EmberObject.extend({ isEmpty: isEmptyObject() });
+  } catch({ message }) {
+    assert.throws(
+      ({message}) => message === "Assertion Failed: `dependentKey` must be defined",
+      'should throw error'
+    );
+  }
 });

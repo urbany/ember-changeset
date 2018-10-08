@@ -1,56 +1,56 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import objectToArray from 'ember-changeset/utils/computed/object-to-array';
 import { module, test } from 'qunit';
 
-const { Object: EmberObject } = Ember;
 
-module('Unit | Utility | object to array');
+/* eslint-disable ember/avoid-leaking-state-in-ember-objects */
+module('Unit | Utility | object to array', function() {
+  test('it converts an object into an array', function(assert) {
+    let Dummy = EmberObject.extend({
+      _object: {
+        firstName: 'Jim',
+        lastName: 'Bob'
+      },
 
-test('it converts an object into an array', function(assert) {
-  let Dummy = EmberObject.extend({
-    _object: {
-      firstName: 'Jim',
-      lastName: 'Bob'
-    },
-
-    values: objectToArray('_object')
+      values: objectToArray('_object')
+    });
+    let result = Dummy.create().get('values');
+    let expectedResult = [
+      { key: 'firstName', value: 'Jim' },
+      { key: 'lastName', value: 'Bob' }
+    ];
+    assert.deepEqual(result, expectedResult, 'should convert to array');
   });
-  let result = Dummy.create().get('values');
-  let expectedResult = [
-    { key: 'firstName', value: 'Jim' },
-    { key: 'lastName', value: 'Bob' }
-  ];
-  assert.deepEqual(result, expectedResult, 'should convert to array');
-});
 
-test('it maintains shallow objects when flattenObjects is false', function(assert) {
-  let Dummy = EmberObject.extend({
-    _object: {
-      firstName: {
-        value: 'Jim',
-        validation: 'Too short'
-      }
-    },
+  test('it maintains shallow objects when flattenObjects is false', function(assert) {
+    let Dummy = EmberObject.extend({
+      _object: {
+        firstName: {
+          value: 'Jim',
+          validation: 'Too short'
+        }
+      },
 
-    values: objectToArray('_object', false)
+      values: objectToArray('_object', false)
+    });
+    let result = Dummy.create().get('values');
+    let expectedResult = [{ key: 'firstName', value: { value: 'Jim', validation: 'Too short' }}];
+    assert.deepEqual(result, expectedResult, 'should convert to array');
   });
-  let result = Dummy.create().get('values');
-  let expectedResult = [{ key: 'firstName', value: { value: 'Jim', validation: 'Too short' }}];
-  assert.deepEqual(result, expectedResult, 'should convert to array');
-});
 
-test('it flattens shallow object values when flattenObjects is true', function(assert) {
-  let Dummy = EmberObject.extend({
-    _object: {
-      firstName: {
-        value: 'Jim',
-        validation: 'Too short'
-      }
-    },
+  test('it flattens shallow object values when flattenObjects is true', function(assert) {
+    let Dummy = EmberObject.extend({
+      _object: {
+        firstName: {
+          value: 'Jim',
+          validation: 'Too short'
+        }
+      },
 
-    values: objectToArray('_object', true)
+      values: objectToArray('_object', true)
+    });
+    let result = Dummy.create().get('values');
+    let expectedResult = [{ key: 'firstName', value: 'Jim', validation: 'Too short' }];
+    assert.deepEqual(result, expectedResult, 'should convert to array');
   });
-  let result = Dummy.create().get('values');
-  let expectedResult = [{ key: 'firstName', value: 'Jim', validation: 'Too short' }];
-  assert.deepEqual(result, expectedResult, 'should convert to array');
 });
